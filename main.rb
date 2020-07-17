@@ -4,27 +4,37 @@ module Enumerable
       for i in 0..self.length-1 do
           yield self[i]
       end
-      self
-      
     elsif self.instance_of?(Hash)
       for i in 0..self.length-1 do
           yield keys[i], values[i]
       end
-      self
+    end
+  end
+
+  def my_each_with_index
+    if self.instance_of?(Array)
+      for i in 0..self.length-1 do
+          yield self[i], i
+      end
+    
+    elsif self.instance_of?(Hash)
+      for i in 0..self.length-1 do
+          yield obj[i], i
+      end
     end
   end
 end
 
-# ar = {"name" => "Rayhan", "sch"=> "microverse"}
-# arr = [1, 2, 3]
+ar = {"name" => "Rayhan", "sch"=> "microverse"}
+arr = [1, 2, 3]
 
-# ar.my_each do |key, value|
-#   puts "#{key} is #{value}"
-# end
+ar.my_each_with_index do |(key, value), index|
+  puts "#{key} is #{value} index is = #{index}"
+end
 
-# arr.my_each do |i|
-#   puts i
-# end
+#ar.my_each_with_index do |i, index|
+#  puts "value = #{i} , index = #{index}"
+#end
 
 
 
