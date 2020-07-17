@@ -36,28 +36,41 @@ module Enumerable
 
   def my_all?
     counter = true
-    if block_given? 
+    if block_given?
       for i in 0..self.length-1 do
         unless yield self[i]
           counter = false
-          counter
         end
       end
-    else 
+    else
       for i in 0..self.length-1 do
         unless self[i]
           counter = false
-          counter
         end
       end
     end
-   
+    counter
   end
-
-
-
-
-
+  
+def my_any?
+  counter = false
+  if block_given? 
+    for i in 0..self.length-1 do
+    if yield self[i]
+      counter = true
+    end
+  end
+    else
+      for i in 0..self.length-1 do
+        if yield self[i] 
+          counter = true
+        end
+      end
+    end
+      counter
+    end
+           
+      
 end
 # ar = {"name" => "Rayhan", "sch"=> "microverse"}
 
@@ -75,9 +88,9 @@ end
 # #  puts "value = #{i} , index = #{index}"
 # #end
 
-p %w[ant bear cat].all? { |word| word.length >= 3 } #=> true
-p %w[ant bear cat].all? { |word| word.length >= 4 } #=> false
-p %w[ant bear cat].all?(/t/)                        #=> false
-p [1, 2i, 3.14].all?(Numeric)                       #=> true
-p [nil, true, 99].all?                              #=> false
-p [].all?                                           #=> true
+p %w[ant bear cat].my_any? { |word| word.length >= 3 } #=> true
+p %w[ant bear cat].my_any? { |word| word.length >= 5 } #=> false
+# p %w[ant bear cat].my_all?(/t/)                        #=> false
+# # p [1, 2i, 3.14].my_all?(Numeric)                       #=> true
+# # p [nil, true, 99].my_all?                              #=> false
+# # p [].all?                                           #=> true
