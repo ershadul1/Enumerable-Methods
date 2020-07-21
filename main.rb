@@ -1,14 +1,18 @@
+# rubocop:disable Style/For
 module Enumerable
   def my_each
-    if self.instance_of?(Array)
-      for i in 0..self.length-1 do
-          yield self[i]
-      end
-    elsif self.instance_of?(Hash)
-      for i in 0..self.length-1 do
+    return enum_for unless block_given?
+
+    if instance_of?(Hash)
+      for i in 0..length - 1 do
           yield keys[i], values[i]
       end
+    else
+      for i in 0..to_a.length - 1 do
+          yield to_a[i]
+      end
     end
+    self
   end
 
   def my_each_with_index
@@ -91,7 +95,7 @@ def my_any?
     end
 
 end
-# ar = {"name" => "Rayhan", "sch"=> "microverse"}
+ar = {"name" => "Rayhan", "sch"=> "microverse"}
 
 
 # arr = ["umar", "rayhan", "mj"]
@@ -112,9 +116,14 @@ end
 
 
 
-p %w[ant bear cat].my_none? { |word| word.length == 5} #=> true
-p %w[ant bear cat].my_none? { |word| word.length >= 4 } #=> false
+#p %w[ant bear cat].my_none? { |word| word.length == 5} #=> true
+#p %w[ant bear cat].my_none? { |word| word.length >= 4 } #=> false
 # p %w[ant bear cat].my_all?(/t/)                        #=> false
 # # p [1, 2i, 3.14].my_all?(Numeric)                       #=> true
 # # p [nil, true, 99].my_all?                              #=> false
 # # p [].all?                                           #=> true
+
+
+p ar.my_each { |i, j| puts i }
+
+# rubocop:enable Style/For
