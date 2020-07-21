@@ -121,7 +121,34 @@ module Enumerable
         end
         counter
       end
-
+      
+      def my_count(*arg)
+        counter = 0
+        if block_given?
+          my_each do |i|
+            counter += 1 if yield i
+          end
+        elsif arg[0]
+          if arg[0] == Regexp
+            my_each do |i|
+              counter +=1 if arg[0].match?(i)
+            end
+          elsif arg[0].is_a?(Class)
+            my_each do |i|
+              counter += 1 if i.is_a?(arg[0])
+            end
+          else
+            my_each do |i|
+              counter += 1 if i == arg[0]
+            end
+          end
+          else
+            my_each do |i|
+              counter += 1 if i
+            end
+          end
+            counter
+      end
 end
 ar = {"name" => "Rayhan", "sch"=> "microverse"}
 
@@ -149,12 +176,12 @@ ar = {"name" => "Rayhan", "sch"=> "microverse"}
 # p [nil, true, 99].my_all?                              #=> false
 # p [].my_all?                                           #=> true
 
-p %w[ant bear cat].my_any? { |word| word.length >= 3 } #=> true
-p %w[ant bear cat].my_any? { |word| word.length >= 4 } #=> true
-p %w[ant bear cat].my_any?(/d/)                        #=> false
-p [nil, true, 99].my_any?(Integer)                     #=> true
-p [nil, true, 99].my_any?                            #=> true
-p [].my_any?                                           #=> false
+# p %w[ant bear cat].my_any? { |word| word.length >= 3 } #=> true
+# p %w[ant bear cat].my_any? { |word| word.length >= 4 } #=> true
+# p %w[ant bear cat].my_any?(/d/)                        #=> false
+# p [nil, true, 99].my_any?(Integer)                     #=> true
+# p [nil, true, 99].my_any?                            #=> true
+# p [].my_any?                                           #=> false
 
 
 # p (3..8).my_select { |i| i < 5 }
@@ -178,4 +205,8 @@ p [].my_any?                                           #=> false
 # p [nil].my_none?                                        #=> true
 # p [nil, false].my_none?                                 #=> true
 # p [nil, false, true].my_none?                           #=> false
-   
+
+ary = [1, 2, 4, 2]
+p ary.my_count               #=> 4
+p ary.my_count(2)            #=> 2
+p ary.my_count{ |x| x%2==0 } #=> 3
