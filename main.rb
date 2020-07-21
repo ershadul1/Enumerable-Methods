@@ -16,26 +16,27 @@ module Enumerable
   end
 
   def my_each_with_index
-    if self.instance_of?(Array)
-      for i in 0..self.length-1 do
-          yield self[i], i
+    return enum_for unless block_given?
+
+    if instance_of?(Hash)
+      for i in 0..length - 1 do
+        yield keys[i], values[i], i
       end
-    
-    elsif self.instance_of?(Hash)
-      for i in 0..self.length-1 do
-          yield keys[i], values[i] , i
+    else
+      for i in 0..to_a.length - 1 do
+        yield to_a[i], i
       end
     end
+    self
   end
   
   def my_select
-    new_arr = []
-    for i in 0..self.length-1 do
-      if yield self[i] 
-      new_arr << self[i]
-    end
-  end
-  new_arr
+    return enum_for unless block_given?
+
+    new_arr = to_a
+    new_arr_two = []
+    new_arr.my_each { |i| new_arr_two << i if yield i }
+    new_arr_two
   end
 
   def my_all?
@@ -124,6 +125,6 @@ ar = {"name" => "Rayhan", "sch"=> "microverse"}
 # # p [].all?                                           #=> true
 
 
-p ar.my_each { |i, j| puts i }
+p (3..8).my_select { |i| i < 5 }
 
 # rubocop:enable Style/For
