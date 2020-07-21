@@ -66,21 +66,31 @@ module Enumerable
       counter
     end
   
-def my_any?
-  counter = false
-  if block_given? 
-    for i in 0..self.length-1 do
-    if yield self[i]
-      counter = true
-    end
-  end
-    else
-      for i in 0..self.length-1 do
-        if yield self[i] 
-          counter = true
+    def my_any?(*arg)
+      counter = false
+      if block_given?
+        my_each do |i|
+          return true if yield i
+        end
+      elsif arg[0]
+        if arg[0] == Regexp
+          my_each do |i|
+            return true if arg[0].match?(i)
+          end
+        elsif arg[0].is_a?(Class)
+          my_each do |i|
+            return true if i.is_a?(arg[0])
+          end
+        else
+          my_each do |i|
+            return true if i == arg[0]
+          end
+        end
+      else
+        my_each do |i|
+          return true if i
         end
       end
-    end
       counter
     end
     
@@ -134,10 +144,17 @@ ar = {"name" => "Rayhan", "sch"=> "microverse"}
 
 
 
-p %w[ant bear cat].my_all?(/t/)                        #=> false
-p [1, 2i, 3.14].my_all?(Numeric)                       #=> true
-p [nil, true, 99].my_all?                              #=> false
-p [].my_all?                                           #=> true
+# p %w[ant bear cat].my_all?(/t/)                        #=> false
+# p [1, 2i, 3.14].my_all?(Numeric)                       #=> true
+# p [nil, true, 99].my_all?                              #=> false
+# p [].my_all?                                           #=> true
+
+p %w[ant bear cat].my_any? { |word| word.length >= 3 } #=> true
+p %w[ant bear cat].my_any? { |word| word.length >= 4 } #=> true
+p %w[ant bear cat].my_any?(/d/)                        #=> false
+p [nil, true, 99].my_any?(Integer)                     #=> true
+p [nil, true, 99].my_any?                            #=> true
+p [].my_any?                                           #=> false
 
 
 # p (3..8).my_select { |i| i < 5 }
