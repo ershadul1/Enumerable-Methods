@@ -149,6 +149,35 @@ module Enumerable
           end
             counter
       end
+      
+      def my_map (*args)
+        map_val = []
+        if block_given?
+          my_each do |i|
+            map_val << i if yield i  
+          end
+        elsif arg[0]
+          if arg[0] == Regexp
+            my_each do |i|
+              map_val << i if arg[0].match?(i)
+            end
+          elsif arg[0].is_a?(Class)
+            my_each do |i|
+              map_val << i if i.is_a?(arg[0])
+            end
+          else
+            my_each do |i|
+              map_val << i if i == arg[0]
+            end
+          end
+          else
+            my_each do |i|
+              map_val << i if i
+            end
+          end
+          map_val
+      end
+      
 end
 ar = {"name" => "Rayhan", "sch"=> "microverse"}
 
@@ -207,6 +236,12 @@ ar = {"name" => "Rayhan", "sch"=> "microverse"}
 # p [nil, false, true].my_none?                           #=> false
 
 ary = [1, 2, 4, 2]
-p ary.my_count               #=> 4
-p ary.my_count(2)            #=> 2
-p ary.my_count{ |x| x%2==0 } #=> 3
+# p ary.my_count               #=> 4
+# p ary.my_count(2)            #=> 2
+# p ary.my_count{ |x| x%2==0 } #=> 3
+
+p ary.my_map{ |x| x%2 ==0 } #=> 3
+
+
+
+
