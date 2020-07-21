@@ -32,30 +32,39 @@ module Enumerable
   
   def my_select
     return enum_for unless block_given?
-
     new_arr = to_a
     new_arr_two = []
     new_arr.my_each { |i| new_arr_two << i if yield i }
     new_arr_two
   end
 
-  def my_all?
-    counter = true
-    if block_given?
-      for i in 0..self.length-1 do
-        unless yield self[i]
-          counter = false
+    def my_all?(*arg)
+      counter = true
+      if block_given?
+        my_each do |i|
+          counter = false unless yield i
+        end
+      elsif arg[0]
+        if arg[0] == Regexp
+          my_each do |i|
+            counter = false unless arg[0].match?(i)
+          end
+        elsif arg[0].is_a?(Class)
+          my_each do |i|
+            counter = false unless i.is_a?(arg[0])
+          end
+        else
+          my_each do |i|
+            counter = false unless i == arg[0]
+          end
+        end
+      else
+        my_each do |i|
+          counter = false unless i
         end
       end
-    else
-      for i in 0..self.length-1 do
-        unless self[i]
-          counter = false
-        end
-      end
+      counter
     end
-    counter
-  end
   
 def my_any?
   counter = false
@@ -75,25 +84,33 @@ def my_any?
       counter
     end
     
-    def my_none?
-      value = true
-      if block_given? 
-      for i in 0..self.length-1 do
-        if yield(self[i]) == true
-         value = false
+    def my_none?(*arg)
+        counter = true
+        if block_given?
+          my_each do |i|
+            counter = false if yield i
+          end
+        elsif arg[0]
+          if arg[0] == Regexp
+            my_each do |i|
+              counter = false if arg[0].match?(i)
+            end
+          elsif arg[0].is_a?(Class)
+            my_each do |i|
+              counter = false if i.is_a?(arg[0])
+            end
+          else
+            my_each do |i|
+              counter = false if i == arg[0]
+            end
+          end
+        else
+          my_each do |i|
+            counter = false if i
+          end
         end
+        counter
       end
-  else
-    for i in 0..self.length-1 do
-      if yield (self[i]) == true
-        counter = false
-      end
-      
-    end
-    
-  end
-     value
-    end
 
 end
 ar = {"name" => "Rayhan", "sch"=> "microverse"}
@@ -117,14 +134,31 @@ ar = {"name" => "Rayhan", "sch"=> "microverse"}
 
 
 
-#p %w[ant bear cat].my_none? { |word| word.length == 5} #=> true
-#p %w[ant bear cat].my_none? { |word| word.length >= 4 } #=> false
-# p %w[ant bear cat].my_all?(/t/)                        #=> false
-# # p [1, 2i, 3.14].my_all?(Numeric)                       #=> true
-# # p [nil, true, 99].my_all?                              #=> false
-# # p [].all?                                           #=> true
+p %w[ant bear cat].my_all?(/t/)                        #=> false
+p [1, 2i, 3.14].my_all?(Numeric)                       #=> true
+p [nil, true, 99].my_all?                              #=> false
+p [].my_all?                                           #=> true
 
 
-p (3..8).my_select { |i| i < 5 }
+# p (3..8).my_select { |i| i < 5 }
+# p ["ant", "bear", "cat"].my_all? { |word| word.length > 3
+# }
+#p [nil, true, 99].my_all? 
+#p [].my_all? 
 
 # rubocop:enable Style/For
+  
+ #p %w[ant bear cat].my_all?(/t/)
+ #p [].my_all?                                            #=> true
+ 
+ #p %w[ant bear cat].my_none? { |word| word.length == 5}
+ 
+# p %w{ant bear cat}.my_none? { |word| word.length == 5 } #=> true
+# p %w{ant bear cat}.my_none? { |word| word.length >= 4 } #=> false
+# p %w{ant bear cat}.my_none?(/d/)                        #=> true
+# p [1, 3.14, 42].my_none?(Float)                         #=> false
+# p [].my_none?                                           #=> true
+# p [nil].my_none?                                        #=> true
+# p [nil, false].my_none?                                 #=> true
+# p [nil, false, true].my_none?                           #=> false
+   
