@@ -69,8 +69,27 @@ def my_any?
     end
       counter
     end
-           
+    
+    def my_none?
+      value = true
+      if block_given? 
+      for i in 0..self.length-1 do
+        if yield(self[i]) == true
+         value = false
+        end
+      end
+  else
+    for i in 0..self.length-1 do
+      if yield (self[i]) == true
+        counter = false
+      end
       
+    end
+    
+  end
+     value
+    end
+
 end
 # ar = {"name" => "Rayhan", "sch"=> "microverse"}
 
@@ -86,10 +105,15 @@ end
 
 # #ar.my_each_with_index do |i, index|
 # #  puts "value = #{i} , index = #{index}"
+
+
 # #end
 
-p %w[ant bear cat].my_any? { |word| word.length >= 3 } #=> true
-p %w[ant bear cat].my_any? { |word| word.length >= 5 } #=> false
+
+
+
+p %w[ant bear cat].my_none? { |word| word.length == 5} #=> true
+p %w[ant bear cat].my_none? { |word| word.length >= 4 } #=> false
 # p %w[ant bear cat].my_all?(/t/)                        #=> false
 # # p [1, 2i, 3.14].my_all?(Numeric)                       #=> true
 # # p [nil, true, 99].my_all?                              #=> false
