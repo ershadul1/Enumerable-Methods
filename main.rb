@@ -111,7 +111,7 @@ module Enumerable
     end
     true
   end
-p  %w[dog door rod blade].my_any?(/d/)
+
   def my_count(*arg)
     counter = 0
     if block_given?
@@ -142,31 +142,21 @@ p  %w[dog door rod blade].my_any?(/d/)
 
   def my_map(*arg)
     map_val = []
+
     if block_given? && arg[0].is_a?(Proc)
       my_each do |i|
-        map_val << i if arg[0].call(i)
+        map_val << arg[0].call(i)
       end
     elsif block_given?
       my_each do |i|
-        map_val << i if yield i
+        map_val << (yield i)
       end
-    elsif arg[0]
-      if arg[0].is_a?(Regexp)
-        my_each do |i|
-          map_val << i if arg[0].match?(i)
-        end
-      elsif arg[0].is_a?(Class)
-        my_each do |i|
-          map_val << i if i.is_a?(arg[0])
-        end
-      elsif arg[0].is_a?(Proc)
-        my_each do |i|
-          map_val << i if arg[0].call(i)
-        end
-      else
-        my_each do |i|
-          map_val << i if i == arg[0]
-        end
+    elsif !block_given? && !arg[0]
+      return enum_for 
+      
+    elsif arg[0].is_a?(Proc)
+      my_each do |i|
+        map_val <<  arg[0].call(i)
       end
     else
       my_each do |i|
@@ -214,6 +204,8 @@ end
 # rubocop:enable Metrics/PerceivedComplexity
 
 
-ar = {a:1, b:2}
+# ar = {a:1, b:2}
 
-p ar.my_each_with_index { |i, j| p j }
+# p ar.my_each_with_index { |i, j| p j }
+
+p (0..10).map{|x| x > 3}
