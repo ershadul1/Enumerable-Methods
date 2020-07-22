@@ -142,67 +142,38 @@ p  %w[dog door rod blade].my_any?(/d/)
 
   def my_map(*arg)
     map_val = []
-    map_return = []
     if block_given? && arg[0].is_a?(Proc)
       my_each do |i|
-        if arg[0].call(i)
-          map_val << i
-          map_return << true 
-        else
-          map_return << false
+        map_val << i if arg[0].call(i)
       end
     elsif block_given?
       my_each do |i|
-        if arg[0].call(i)
-          map_val << i
-          map_return << true 
-        else
-          map_return << false
+        map_val << i if yield i
       end
     elsif arg[0]
       if arg[0].is_a?(Regexp)
         my_each do |i|
-          if arg[0].call(i)
-            map_val << i
-            map_return << true 
-          else
-            map_return << false
+          map_val << i if arg[0].match?(i)
         end
       elsif arg[0].is_a?(Class)
         my_each do |i|
-          if arg[0].call(i)
-            map_val << i
-            map_return << true 
-          else
-            map_return << false
+          map_val << i if i.is_a?(arg[0])
         end
       elsif arg[0].is_a?(Proc)
         my_each do |i|
-          if arg[0].call(i)
-            map_val << i
-            map_return << true 
-          else
-            map_return << false
+          map_val << i if arg[0].call(i)
         end
       else
         my_each do |i|
-          if arg[0].call(i)
-            map_val << i
-            map_return << true 
-          else
-            map_return << false
+          map_val << i if i == arg[0]
         end
       end
     else
       my_each do |i|
-        if arg[0].call(i)
-          map_val << i
-          map_return << true 
-        else
-          map_return << false
+        map_val << i if i
       end
     end
-    map_return
+    map_val
   end
 
   def my_inject(*arg)
