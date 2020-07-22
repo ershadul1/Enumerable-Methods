@@ -38,145 +38,178 @@ module Enumerable
     new_arr_two
   end
 
-    def my_all?(*arg)
-      counter = true
-      if block_given?
+  def my_all?(*arg)
+    counter = true
+    if block_given?
+      my_each do |i|
+        counter = false unless yield i
+      end
+    elsif arg[0]
+      if arg[0] == Regexp
         my_each do |i|
-          counter = false unless yield i
+          counter = false unless arg[0].match?(i)
         end
-      elsif arg[0]
-        if arg[0] == Regexp
-          my_each do |i|
-            counter = false unless arg[0].match?(i)
-          end
-        elsif arg[0].is_a?(Class)
-          my_each do |i|
-            counter = false unless i.is_a?(arg[0])
-          end
-        else
-          my_each do |i|
-            counter = false unless i == arg[0]
-          end
+      elsif arg[0].is_a?(Class)
+        my_each do |i|
+          counter = false unless i.is_a?(arg[0])
         end
       else
         my_each do |i|
-          counter = false unless i
+          counter = false unless i == arg[0]
         end
       end
-      counter
+    else
+      my_each do |i|
+        counter = false unless i
+      end
     end
+    counter
+  end
+
+  def my_any?(*arg)
+    counter = false
+    if block_given?
+      my_each do |i|
+        return true if yield i
+      end
+    elsif arg[0]
+      if arg[0] == Regexp
+        my_each do |i|
+          return true if arg[0].match?(i)
+        end
+      elsif arg[0].is_a?(Class)
+        my_each do |i|
+          return true if i.is_a?(arg[0])
+        end
+      else
+        my_each do |i|
+          return true if i == arg[0]
+        end
+      end
+    else
+      my_each do |i|
+        return true if i
+      end
+    end
+    counter
+  end
   
-    def my_any?(*arg)
-      counter = false
-      if block_given?
+  def my_none?(*arg)
+    counter = true
+    if block_given?
+      my_each do |i|
+        counter = false if yield i
+      end
+    elsif arg[0]
+      if arg[0] == Regexp
         my_each do |i|
-          return true if yield i
+          counter = false if arg[0].match?(i)
         end
-      elsif arg[0]
-        if arg[0] == Regexp
-          my_each do |i|
-            return true if arg[0].match?(i)
-          end
-        elsif arg[0].is_a?(Class)
-          my_each do |i|
-            return true if i.is_a?(arg[0])
-          end
-        else
-          my_each do |i|
-            return true if i == arg[0]
-          end
+      elsif arg[0].is_a?(Class)
+        my_each do |i|
+          counter = false if i.is_a?(arg[0])
         end
       else
         my_each do |i|
-          return true if i
+          counter = false if i == arg[0]
         end
       end
-      counter
+    else
+      my_each do |i|
+        counter = false if i
+      end
     end
+    counter
+  end
     
-    def my_none?(*arg)
-        counter = true
-        if block_given?
-          my_each do |i|
-            counter = false if yield i
-          end
-        elsif arg[0]
-          if arg[0] == Regexp
-            my_each do |i|
-              counter = false if arg[0].match?(i)
-            end
-          elsif arg[0].is_a?(Class)
-            my_each do |i|
-              counter = false if i.is_a?(arg[0])
-            end
-          else
-            my_each do |i|
-              counter = false if i == arg[0]
-            end
-          end
-        else
-          my_each do |i|
-            counter = false if i
-          end
+  def my_count(*arg)
+  counter = 0
+  if block_given?
+    my_each do |i|
+      counter += 1 if yield i
+    end
+  elsif arg[0]
+    if arg[0] == Regexp
+      my_each do |i|
+        counter +=1 if arg[0].match?(i)
+      end
+    elsif arg[0].is_a?(Class)
+      my_each do |i|
+        counter += 1 if i.is_a?(arg[0])
+      end
+    else
+      my_each do |i|
+        counter += 1 if i == arg[0]
+      end
+    end
+    else
+      my_each do |i|
+        counter += 1 if i
+      end
+    end
+      counter
+  end
+    
+  def my_map (*arg)
+    map_val = []
+    if block_given? 77
+      my_each do |i|
+        map_val << i if yield i  
+      end
+    elsif arg[0]
+      if arg[0] == Regexp
+        my_each do |i|
+          map_val << i if arg[0].match?(i)
         end
-        counter
+      elsif arg[0].is_a?(Class)
+        my_each do |i|
+          map_val << i if i.is_a?(arg[0])
+        end
+      elsif arg[0].is_a?(Proc)
+        my_each do |i|
+          map_val << i if arg[0].call(i)
+        end
+      else
+        my_each do |i|
+          map_val << i if i == arg[0]
+        end
       end
-      
-      def my_count(*arg)
-        counter = 0
-        if block_given?
-          my_each do |i|
-            counter += 1 if yield i
-          end
-        elsif arg[0]
-          if arg[0] == Regexp
-            my_each do |i|
-              counter +=1 if arg[0].match?(i)
-            end
-          elsif arg[0].is_a?(Class)
-            my_each do |i|
-              counter += 1 if i.is_a?(arg[0])
-            end
-          else
-            my_each do |i|
-              counter += 1 if i == arg[0]
-            end
-          end
-          else
-            my_each do |i|
-              counter += 1 if i
-            end
-          end
-            counter
+    else
+      my_each do |i|
+        map_val << i if i
       end
-      
-      def my_map (*args)
-        map_val = []
-        if block_given?
-          my_each do |i|
-            map_val << i if yield i  
-          end
-        elsif arg[0]
-          if arg[0] == Regexp
-            my_each do |i|
-              map_val << i if arg[0].match?(i)
-            end
-          elsif arg[0].is_a?(Class)
-            my_each do |i|
-              map_val << i if i.is_a?(arg[0])
-            end
-          else
-            my_each do |i|
-              map_val << i if i == arg[0]
-            end
-          end
-          else
-            my_each do |i|
-              map_val << i if i
-            end
-          end
-          map_val
+    end
+      map_val
+  end
+
+  def my_inject(*arg)
+    
+    if block_given? && arg[0]
+      result = arg[0]
+      my_each do |i|
+        result = yield result, i
       end
+    elsif block_given?
+      result = self[0]
+      my_each do |i|
+        result = yield result, i
+      end
+    elsif arg[0] && arg[1]
+      result = arg[0]
+      for i in (0..self.to_a.length - 1) do
+        result = result.send(arg[1], self.to_a[i])
+      end
+    else
+      result = self.to_a[0]
+      for i in (1..self.to_a.length - 1) do
+        result = result.send(arg[0], self.to_a[i])
+      end
+    end
+    result
+  end
+
+  
+
       
 end
 ar = {"name" => "Rayhan", "sch"=> "microverse"}
@@ -235,13 +268,27 @@ ar = {"name" => "Rayhan", "sch"=> "microverse"}
 # p [nil, false].my_none?                                 #=> true
 # p [nil, false, true].my_none?                           #=> false
 
-ary = [1, 2, 4, 2]
+ary = [1, 2, 5, 4]
 # p ary.my_count               #=> 4
 # p ary.my_count(2)            #=> 2
 # p ary.my_count{ |x| x%2==0 } #=> 3
 
-p ary.my_map{ |x| x%2 ==0 } #=> 3
+#p ary.my_inject(:+)
+
+p %w{ cat sheep bear }.my_inject { |memo, word| memo.length > word.length ? memo : word }
+
+p (5..10).my_inject(1, :*)   
+
+p (5..10).my_inject(:+)  
+
+def multiply_els(*arg)
+  arr = arg[0].to_a
+  arr.my_inject(:*)
+end
+
+p multiply_els([2,4,5])
 
 
+my_proc = Proc.new {|x| x>2 }
 
-
+p ary.my_count
