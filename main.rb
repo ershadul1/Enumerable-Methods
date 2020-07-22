@@ -152,7 +152,11 @@ module Enumerable
     
   def my_map (*arg)
     map_val = []
-    if block_given? 77
+    if block_given? && arg[0].is_a?(Proc)
+      my_each do |i|
+        map_val << i if arg[0].call(i)
+      end
+    elsif block_given? 
       my_each do |i|
         map_val << i if yield i  
       end
@@ -291,4 +295,4 @@ p multiply_els([2,4,5])
 
 my_proc = Proc.new {|x| x>2 }
 
-p ary.my_count
+p ary.my_map { |i| i > 1}
