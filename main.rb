@@ -7,14 +7,8 @@ module Enumerable
   def my_each
     return enum_for unless block_given?
 
-    if instance_of?(Hash)
-      for i in 0..length - 1 do
-        yield keys[i], values[i]
-      end
-    else
-      for i in 0..to_a.length - 1 do
-        yield to_a[i]
-      end
+    for i in 0..to_a.length - 1 do
+      yield to_a[i]
     end
     self
   end
@@ -22,14 +16,8 @@ module Enumerable
   def my_each_with_index
     return enum_for unless block_given?
 
-    if instance_of?(Hash)
-      for i in 0..length - 1 do
-        yield keys[i], values[i], i
-      end
-    else
-      for i in 0..to_a.length - 1 do
-        yield to_a[i], i
-      end
+    for i in 0..to_a.length - 1 do
+      yield to_a[i], i
     end
     self
   end
@@ -44,41 +32,39 @@ module Enumerable
   end
 
   def my_all?(*arg)
-    counter = true
     if block_given?
       my_each do |i|
-        counter = false unless yield i
+        return false unless yield i
       end
     elsif arg[0]
-      if arg[0] == Regexp
+      if arg[0].is_a?(Regexp)
         my_each do |i|
-          counter = false unless arg[0].match?(i)
+          return false unless arg[0].match?(i)
         end
       elsif arg[0].is_a?(Class)
         my_each do |i|
-          counter = false unless i.is_a?(arg[0])
+          return false unless i.is_a?(arg[0])
         end
       else
         my_each do |i|
-          counter = false unless i == arg[0]
+          return false unless i == arg[0]
         end
       end
     else
       my_each do |i|
-        counter = false unless i
+        return false unless i
       end
     end
-    counter
+    true
   end
 
   def my_any?(*arg)
-    counter = false
     if block_given?
       my_each do |i|
         return true if yield i
       end
     elsif arg[0]
-      if arg[0] == Regexp
+      if arg[0].is_a?(Regexp)
         my_each do |i|
           return true if arg[0].match?(i)
         end
@@ -96,37 +82,36 @@ module Enumerable
         return true if i
       end
     end
-    counter
+    false
   end
 
   def my_none?(*arg)
-    counter = true
     if block_given?
       my_each do |i|
-        counter = false if yield i
+        return false if yield i
       end
     elsif arg[0]
-      if arg[0] == Regexp
+      if arg[0].is_a?(Regexp)
         my_each do |i|
-          counter = false if arg[0].match?(i)
+          return false if arg[0].match?(i)
         end
       elsif arg[0].is_a?(Class)
         my_each do |i|
-          counter = false if i.is_a?(arg[0])
+          return false if i.is_a?(arg[0])
         end
       else
         my_each do |i|
-          counter = false if i == arg[0]
+          return false if i == arg[0]
         end
       end
     else
       my_each do |i|
-        counter = false if i
+        return false if i
       end
     end
-    counter
+    true
   end
-
+p  %w[dog door rod blade].my_any?(/d/)
   def my_count(*arg)
     counter = 0
     if block_given?
@@ -157,38 +142,67 @@ module Enumerable
 
   def my_map(*arg)
     map_val = []
+    map_return = []
     if block_given? && arg[0].is_a?(Proc)
       my_each do |i|
-        map_val << i if arg[0].call(i)
+        if arg[0].call(i)
+          map_val << i
+          map_return << true 
+        else
+          map_return << false
       end
     elsif block_given?
       my_each do |i|
-        map_val << i if yield i
+        if arg[0].call(i)
+          map_val << i
+          map_return << true 
+        else
+          map_return << false
       end
     elsif arg[0]
-      if arg[0] == Regexp
+      if arg[0].is_a?(Regexp)
         my_each do |i|
-          map_val << i if arg[0].match?(i)
+          if arg[0].call(i)
+            map_val << i
+            map_return << true 
+          else
+            map_return << false
         end
       elsif arg[0].is_a?(Class)
         my_each do |i|
-          map_val << i if i.is_a?(arg[0])
+          if arg[0].call(i)
+            map_val << i
+            map_return << true 
+          else
+            map_return << false
         end
       elsif arg[0].is_a?(Proc)
         my_each do |i|
-          map_val << i if arg[0].call(i)
+          if arg[0].call(i)
+            map_val << i
+            map_return << true 
+          else
+            map_return << false
         end
       else
         my_each do |i|
-          map_val << i if i == arg[0]
+          if arg[0].call(i)
+            map_val << i
+            map_return << true 
+          else
+            map_return << false
         end
       end
     else
       my_each do |i|
-        map_val << i if i
+        if arg[0].call(i)
+          map_val << i
+          map_return << true 
+        else
+          map_return << false
       end
     end
-    map_val
+    map_return
   end
 
   def my_inject(*arg)
@@ -227,3 +241,8 @@ end
 # rubocop:enable Metrics/MethodLength
 # rubocop:enable Metrics/CyclomaticComplexity
 # rubocop:enable Metrics/PerceivedComplexity
+
+
+ar = {a:1, b:2}
+
+p ar.my_each_with_index { |i, j| p j }
