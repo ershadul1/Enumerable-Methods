@@ -152,11 +152,10 @@ module Enumerable
         map_val << (yield i)
       end
     elsif !block_given? && !arg[0]
-      return enum_for 
-      
+      return enum_for
     elsif arg[0].is_a?(Proc)
       my_each do |i|
-        map_val <<  arg[0].call(i)
+        map_val << arg[0].call(i)
       end
     else
       my_each do |i|
@@ -169,24 +168,26 @@ module Enumerable
   def my_inject(*arg)
     if block_given? && arg[0]
       result = arg[0]
-      my_each do |i|
-        result = yield result, i
+      for i in (0..to_a.length - 1) do
+        result = (yield result, to_a[i])
       end
     elsif block_given?
-      result = self[0]
-      my_each do |i|
-        result = yield result, i
+      result = to_a[0]
+      for i in (1..to_a.length - 1) do
+        result = (yield result, to_a[i])
       end
     elsif arg[0] && arg[1]
       result = arg[0]
       for i in (0..to_a.length - 1) do
         result = result.send(arg[1], to_a[i])
       end
-    else
+    elsif arg[0]
       result = to_a[0]
       for i in (1..to_a.length - 1) do
         result = result.send(arg[0], to_a[i])
       end
+    elsif !block_given?
+      yield
     end
     result
   end
@@ -202,10 +203,3 @@ end
 # rubocop:enable Metrics/MethodLength
 # rubocop:enable Metrics/CyclomaticComplexity
 # rubocop:enable Metrics/PerceivedComplexity
-
-
-# ar = {a:1, b:2}
-
-# p ar.my_each_with_index { |i, j| p j }
-
-p (0..10).map{|x| x > 3}
