@@ -1,6 +1,15 @@
 # Enumerable-Methods
 
-This project contains selfmade enumerable methods
+This project contains selfmade enumerable methods such as
+- my_each
+- my_each_with_index
+- my_select
+- my_count
+- my_all?
+- my_any?
+- my_none?
+- my_map
+- my_inject
 
 ## Requirements
 
@@ -29,9 +38,9 @@ cd Enumerable-Methods
 [5, 4, 1].my_select { |i| i == 4 }                         # => [4]
 %w[ant bear cat].my_all? { |word| word.length >= 4 }       # => false
 [nil, true, 99].my_any?(Integer)                           # => true
-[nil, false, true].none?                                   #=> false
+[nil, false, true].my_none?                                # => false
 [1, 3, 5].my_count { |i| i > 1 }                           # => 2
-(1..4).map { |i| i*i }                                     # => [1, 4, 9, 16]
+(1..4).my_map { |i| i*i }                                  # => [1, 4, 9, 16]
 (5..10).my_inject { |sum, n| sum + n }                     # => 45
 ```
 
