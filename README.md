@@ -1,5 +1,13 @@
 # Enumerable-Methods
 
+## Project Description
+> In this project we built enumerable methods that correspons to the built-in ruby enumerable methods.
+The main goal of the project was to learn the building blocks of ruby proramming language.
+
+## Built With
+- Ruby
+
+## Features
 This project contains selfmade enumerable methods such as
 - my_each
 - my_each_with_index
